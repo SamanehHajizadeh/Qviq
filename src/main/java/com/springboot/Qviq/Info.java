@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Entity
@@ -16,42 +15,30 @@ import java.util.List;
 // Static variables if not synchronized properly become a major cause of thread-safety issues.
 
 //@JsonIgnoreProperties(ignoreUnknown = true) //:rom the Jackson JSON processing library to indicate that any properties not bound in this type should be ignored.
-public class Message {
+public class Info {
 
     private
     @Id
     @GeneratedValue
-    Long messageId;
-    private int LogId;
+    Long Id;
     private String name;  // name of to submitting party
     private String messageContent;
     private Date date;
 
-    public Message() {
+    public Info() {
     }
 
-    public Message(Long messageId, String name, String messageContent, Date date) {
-        this.messageId = messageId;
+    public Info(Long messageId, String name, String messageContent, Date date) {
+        this.Id = messageId;
         this.name = name;
         this.messageContent = messageContent;
         this.date = date;
     }
 
-    public Message(Long messageId, int logId, String name, String messageContent, Date date) {
-        this.messageId = messageId;
-        this.LogId = logId;
-        this.name = name;
-        this.messageContent = messageContent;
-        this.date = date;
+    public Long getId() {
+        return Id;
     }
 
-    public Long getMessageId() {
-        return messageId;
-    }
-
-    public int getLogId() {
-        return LogId;
-    }
 
     public String getName() {
         return name;
@@ -63,6 +50,22 @@ public class Message {
 
     public Date getDate() {
         return date;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMessageContent(String messageContent) {
+        this.messageContent = messageContent;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     //No setter to make it immutable(threadSafe)

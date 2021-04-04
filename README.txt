@@ -11,11 +11,17 @@ In the postman or URL send these Requests :
  ------------------------------------------------------------------------
  2. Create a @Repository with
  getLog(int logId) and
- addMessage(String name, int logId, String message) methods that maps to an internal data object.
- Each message that gets added to a log should also get
+ addMessage(String name, int logId, String info) methods that maps to an internal data object.
+ Each info that gets added to a log should also get
  a timestamp added to it.
  The "name" field is intended to identify the submitting party.
 
   ------------------------------------------------------------------------
+  3. Add rest methods for the functionality described in step 2.
+
+  * http://localhost:8080/all
+  * http://localhost:8080/getLog
+  * http://localhost:8080/addMessage?name=samane&logId=10&info=First_test
+  -----------------------------------------------------------------------------
 
 
