@@ -1,8 +1,12 @@
 package com.springboot.Qviq;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.Hashtable;
 import java.util.logging.Logger;
 
 
@@ -13,6 +17,9 @@ public class Controller   {
     @Autowired
     private IInfoService service;
 
+    @Autowired
+    private InfoRepository repository;
+
     @GetMapping(value = "/ping")
     public ResponseEntity<Object> getPong() {
         return new ResponseEntity<>("Pong", HttpStatus.OK);
@@ -21,14 +28,6 @@ public class Controller   {
     @GetMapping(value = "/")
     public ResponseEntity<Object> getHello() {
           return new ResponseEntity<>("Hello World!", HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/addMessage", method = RequestMethod.PUT)
-    public ResponseEntity<Object> addMessageToLog(@RequestParam("logId") int logId,
-                                             @RequestParam("name") String name,
-                                             @RequestParam("message") String message){
-        Info info = service.addMessage(name, logId, message);
-        return new ResponseEntity<>(info, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/getLog/{id}", method = RequestMethod.GET)
@@ -41,9 +40,29 @@ public class Controller   {
         return new  ResponseEntity<>(service.findAll(), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/NewMessage", method = RequestMethod.POST)
+    public ResponseEntity<Object> addNewMessage(@RequestBody Info message) {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, getCookie().toString())
+                .body(repository.save(service.addNewMessage(message)));
+    }
 
+    @PutMapping("/addMessage")
+    ResponseEntity<Object> updateLogByAddingMessage(@RequestParam("logId") int logId,
+                                                    @RequestParam("name") String name,
+                                                    @RequestParam("message") String message) {
 
+        Info save = repository.save(service.updateLogByAddingMessage(name, logId, message));
+        return ResponseEntity.ok().body(save);
+    }
 
-
+    public HttpCookie getCookie(){
+        return
+                ResponseCookie
+                        .from("heroku-nav-data", "nav_data")
+//                    .maxAge(1000)
+                        .path("/")
+                        .build();
+    }
 }
 

@@ -29,5 +29,27 @@ In the postman or URL send these Requests :
   http://localhost:8080/addMessage?name=samane&logId=10&info=First_test
   http://localhost:8080/addMessage?name=samane&logId=10&info=First_test
   --------------------------------------------------------------------------------
+  5. Add one or more integration tests using bash/sh, curl, and jq. Use alternate or additional tools as you see fit. See if you can test for thread safety.
+
+GET: getting all messages
+  http://localhost:8080/all
+GET: getting specific message via id
+  http://localhost:8080/getLog/1
+PUT: For changing content of message in Info Object:
+  http://localhost:8080/addMessage?name=samane&logId=1&message=mnbvcxeffsf****
+POST: For  adding a new OBJ:
+  http://localhost:8080/NewMessage
+      {
+          "name": "Bob",
+          "messageContent": "messageContent B ",
+          "date": "2021-09-03T07:32:30.000+0000"
+      }
+-----------------------------------------------------------------------
+
+
+Note: For CRUL test please check our path, if U use Windows. Some guide as hard code is in CrulTest, otherwise it's ok :)
+---------------------------------------------------------------------------------------
+
+
 
 

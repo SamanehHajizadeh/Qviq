@@ -1,12 +1,16 @@
 package com.springboot.Qviq;
 
 
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 
 public interface IInfoService {
 
     Info getLog(int logId) ;
-    Info addMessage(String name, int logId, String message);
+    Info updateLogByAddingMessage(String name, int logId, String message);
     List<Info> findAll() ;
+    Info addNewMessage(Info message);
+
 
 }
