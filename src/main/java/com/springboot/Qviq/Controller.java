@@ -4,11 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -59,7 +56,7 @@ public class Controller   {
     @RequestMapping(value = "/NewMessage", method = RequestMethod.POST)
     public ResponseEntity<Object> addNewMessage(@RequestBody Info message) {
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, getCookie().toString())
+                .header(HttpHeaders.SET_COOKIE, service.getCookie().toString())
                 .body(repository.save(service.addNewMessage(message)));
     }
 
@@ -86,7 +83,7 @@ public class Controller   {
     public ResponseEntity<Object> max_age_(@PathVariable() Integer max_age) {
         return  ResponseEntity
                 .ok()
-                .body(service.max_age_(max_age));
+                .body(service.showMessagesLessAnMaxAge(max_age));
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -105,17 +102,17 @@ public class Controller   {
         Result save = resultRepository.save(result);
         return ResponseEntity
                 .ok()
+                .header(HttpHeaders.SET_COOKIE, service.getCookie().toString())
                 .cacheControl(CacheControl.maxAge(maxAge_limit, TimeUnit.SECONDS))
                 .body(save);
     }
 
-    public HttpCookie getCookie(){
-        return
-                ResponseCookie
-                        .from("heroku-nav-data", "nav_data")
-//                    .maxAge(1000)
-                        .path("/")
-                        .build();
+
+    @DeleteMapping("/Message/{id}")
+    void deleteLog(@PathVariable Long id) {
+        repository.deleteById(id);
     }
+
+
 }
 

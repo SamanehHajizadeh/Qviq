@@ -70,4 +70,10 @@ _the average number of messages per log.
 8. Update your integration tests to cover the functionality described in step 7.
 
 -----------------------------------------------------------------------------------------
-
+9. Document the service in a README.md. The doc should describe how to run the service and the integration tests. The rest API can be documented here too.
+--------------------------------------------------------------------------------------------------
+extra credit:
+set up a spring cron job to remove messages older than maxAge.
+Set it to run every minute by default.
+It should be possible to set an alternate interval by
+passing a command line argument when starting the service.
