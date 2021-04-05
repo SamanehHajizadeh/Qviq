@@ -20,23 +20,29 @@ public class Info {
     private
     @Id
     @GeneratedValue
-    Long Id;
-    private String name;  // name of to submitting party
-    private String messageContent;
-    private Date date;
+     Long logId;
+    private  String name;  // name of to submitting party
+    private  String messageContent;
+    private  Date date;
 
     public Info() {
     }
 
-    public Info(Long messageId, String name, String messageContent, Date date) {
-        this.Id = messageId;
+    public Info(Long id, String name, String messageContent, Date date) {
+        logId = id;
         this.name = name;
         this.messageContent = messageContent;
         this.date = date;
     }
 
-    public Long getId() {
-        return Id;
+    public Info(String name, String messageContent, Date date) {
+        this.name = name;
+        this.messageContent = messageContent;
+        this.date = date;
+    }
+
+    public Long getLogId() {
+        return logId;
     }
 
 
@@ -50,22 +56,6 @@ public class Info {
 
     public Date getDate() {
         return date;
-    }
-
-    public void setId(Long id) {
-        Id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setMessageContent(String messageContent) {
-        this.messageContent = messageContent;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     //No setter to make it immutable(threadSafe)

@@ -23,5 +23,11 @@ In the postman or URL send these Requests :
   * http://localhost:8080/getLog
   * http://localhost:8080/addMessage?name=samane&logId=10&info=First_test
   -----------------------------------------------------------------------------
+  4. Make sure your solution so far is thread safe, if it is not already.
+
+ Send those req in the same time
+  http://localhost:8080/addMessage?name=samane&logId=10&info=First_test
+  http://localhost:8080/addMessage?name=samane&logId=10&info=First_test
+  --------------------------------------------------------------------------------
 
 

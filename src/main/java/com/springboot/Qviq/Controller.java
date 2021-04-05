@@ -27,7 +27,8 @@ public class Controller   {
     public ResponseEntity<Object> addMessageToLog(@RequestParam("logId") int logId,
                                              @RequestParam("name") String name,
                                              @RequestParam("message") String message){
-        return new ResponseEntity<>(service.addMessage( name, logId, message), HttpStatus.CREATED);
+        Info info = service.addMessage(name, logId, message);
+        return new ResponseEntity<>(info, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/getLog/{id}", method = RequestMethod.GET)
