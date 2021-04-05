@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -32,14 +33,13 @@ public class Controller   {
         return new ResponseEntity<>("Pong", HttpStatus.OK);
     }
 
-    @GetMapping(value = "/")
-    public ResponseEntity<Object> getHello() {
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, service.createCookie().toString())
-                .body("Hello World!");
-         // return new ResponseEntity<>("Hello World!", HttpStatus.OK);
-    }
+//    @GetMapping(value = "/")
+//    public ResponseEntity<Object> getHello() {
+//        return ResponseEntity
+//                .ok()
+//                .header(HttpHeaders.SET_COOKIE, service.createCookie().toString())
+//                .body("Hello World!");
+//    }
 
     @RequestMapping(value = "/getLog/{id}", method = RequestMethod.GET)
     public ResponseEntity<Object> getLog(@PathVariable("id") int logId) {
@@ -82,6 +82,29 @@ public class Controller   {
         return  ResponseEntity
                 .ok()
                 .body(service.max_age_(max_age));
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ResponseEntity<Object> getLogByCache(){
+
+        Hashtable<String, Object> hash = service.getLogByCache();
+        ObjectMapper mapper = new ObjectMapper();
+        Result result = mapper.convertValue(hash, Result.class);
+
+//        CacheControl cacheControl =
+//                CacheControl.maxAge(max_age, TimeUnit.SECONDS)
+//         .noTransform()
+//         .cachePrivate();
+
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setCacheControl("max-age=600");
+
+        Long maxAge_limit = (Long) hash.get("maxAge_limit");
+        System.out.println(maxAge_limit);
+        return ResponseEntity
+                .ok()
+                .cacheControl(CacheControl.maxAge(maxAge_limit, TimeUnit.SECONDS))
+                .body(result);
     }
 
     public HttpCookie getCookie(){

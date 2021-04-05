@@ -4,6 +4,8 @@ package com.springboot.Qviq;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 public interface IInfoService {
@@ -15,5 +17,6 @@ public interface IInfoService {
      ResponseCookie createCookie();
     long findMaxAgeOfMessage(long id);
     List<Info>  max_age_(Integer max_age);
+    Hashtable<String,Object> getLogByCache();
 
 }

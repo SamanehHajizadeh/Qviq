@@ -8,16 +8,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -26,6 +23,10 @@ ConcurrentHashMap OR Hashtable: Alternatively to synchronized collections, we ca
    */
 @Service
 public class InfoService implements IInfoService {
+
+    private final static Logger log = Logger.getLogger(InfoService.class.getName());
+    private long max_age = 1700000;
+
 
     @Autowired
     private InfoRepository repository;
@@ -132,6 +133,35 @@ public class InfoService implements IInfoService {
         return messages;
     }
 
+
+    public Hashtable<String, Object> getLogByCache(){
+        int countOfMessages = 0;
+        ObjectMapper mapper = new ObjectMapper();
+        List<Info> allLogs = findAll();
+        if(allLogs.isEmpty())
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "404"
+            );
+        int countOfLogs = allLogs.size();
+        log.info("**********List Size*********" + countOfLogs);
+
+        for (Info infoLog : allLogs) {
+
+        if(infoLog.getMessageContent()!= null)
+//        if(!infoLog.getMessageContent().isEmpty())
+                countOfMessages ++;
+        }
+        log.info("**********Count of messages*********" + countOfMessages);
+
+        Hashtable<String, Object> hash = new Hashtable<>();
+        hash.put("current_number_of_stored_logs", countOfLogs);
+        hash.put("maxAge_limit", max_age);
+        hash.put("total_number_of_messages", countOfMessages);
+        hash.put("average_number_of_messages_per_log", countOfMessages / countOfMessages);
+
+//        Result result = mapper.convertValue(hash, Result.class);
+        return hash;
+    }
 
     public ResponseCookie createCookie(){
         return ResponseCookie.from("user-id", "Samane")
