@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Hashtable;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 
@@ -20,6 +21,12 @@ public class Controller   {
     @Autowired
     private InfoRepository repository;
 
+    @GetMapping("/read-spring-cookie")
+    public String readCookie(
+            @CookieValue(name = "user-id", defaultValue = "default-user-id") String userId) {
+        return userId;
+    }
+
     @GetMapping(value = "/ping")
     public ResponseEntity<Object> getPong() {
         return new ResponseEntity<>("Pong", HttpStatus.OK);
@@ -27,7 +34,11 @@ public class Controller   {
 
     @GetMapping(value = "/")
     public ResponseEntity<Object> getHello() {
-          return new ResponseEntity<>("Hello World!", HttpStatus.OK);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, service.createCookie().toString())
+                .body("Hello World!");
+         // return new ResponseEntity<>("Hello World!", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getLog/{id}", method = RequestMethod.GET)
@@ -54,6 +65,23 @@ public class Controller   {
 
         Info save = repository.save(service.updateLogByAddingMessage(name, logId, message));
         return ResponseEntity.ok().body(save);
+    }
+
+    @GetMapping(value = "/max_age_message/{id}")
+    public ResponseEntity<String> max_age_(@PathVariable("id") Long id) {
+
+        long ageOfMessage = service.findMaxAgeOfMessage(id);
+
+        String daysBetween =""+(TimeUnit.SECONDS.convert(ageOfMessage, TimeUnit.MILLISECONDS));
+
+        return new ResponseEntity<>(daysBetween, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/allMessagesLessThan_max_age/{max_age}")
+    public ResponseEntity<Object> max_age_(@PathVariable() Integer max_age) {
+        return  ResponseEntity
+                .ok()
+                .body(service.max_age_(max_age));
     }
 
     public HttpCookie getCookie(){

@@ -1,6 +1,7 @@
 package com.springboot.Qviq;
 
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface IInfoService {
     Info updateLogByAddingMessage(String name, int logId, String message);
     List<Info> findAll() ;
     Info addNewMessage(Info message);
-
+     ResponseCookie createCookie();
+    long findMaxAgeOfMessage(long id);
+    List<Info>  max_age_(Integer max_age);
 
 }

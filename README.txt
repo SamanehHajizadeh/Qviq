@@ -45,11 +45,20 @@ POST: For  adding a new OBJ:
           "date": "2021-09-03T07:32:30.000+0000"
       }
 -----------------------------------------------------------------------
+6. Add the possibility to configure a maxAge for returned messages.
+Any messages older than maxAge should not be returned.
+Add a rest method under /set_max_age that takes an integer describing the number of seconds a message should be available.
+
 
 
 Note: For CRUL test please check our path, if U use Windows. Some guide as hard code is in CrulTest, otherwise it's ok :)
 ---------------------------------------------------------------------------------------
+GET: getting age of specific message:
+ http://localhost:8080/max_age_message/1
 
+GET: getting All messages Less Than specific Age(in_second):
+http://localhost:8080/allMessagesLessThan_max_age/71914430
+-----------------------------------------------------------------
 
 
 

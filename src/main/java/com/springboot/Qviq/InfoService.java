@@ -3,9 +3,13 @@ package com.springboot.Qviq;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /*
@@ -91,5 +97,65 @@ public class InfoService implements IInfoService {
                     throw new RuntimeException();
 //                    throw new InfoUnSupportedFieldPatchException();
                 });
+    }
+
+
+    public long findMaxAgeOfMessage(long id){
+            Info message = repository.findById(id)
+                    .orElseThrow(() -> new InfoNotFoundException(id));
+
+            Date dateMessage = message.getDate();
+            if((dateMessage.equals(null)))
+                throw new NullPointerException("message_Date is null" );
+
+            System.out.println( "message_Date: " +  dateMessage);
+
+            Date date2 = new Date();
+            System.out.println("NOW: " + date2 );
+
+
+            long diffResult = dateMessage.getTime() - new Date().getTime();
+            System.out.println(diffResult +"********MaxAgeOfMessage**********");
+
+        return diffResult;
+
+    }
+
+    public List<Info>  max_age_(Integer max_age) {
+        System.out.println("max_age: " + max_age);
+
+        List<Info> messages = repository.findAll()
+                .stream()
+                .filter(x ->
+                        Long.compare(findMaxAgeOfMessage(x.getLogId()), max_age)== -1 )
+                .collect(Collectors.toList());
+        return messages;
+    }
+
+
+    public ResponseCookie createCookie(){
+        return ResponseCookie.from("user-id", "Samane")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60)
+//                .domain("example.com")
+                .build();
+    }
+
+
+    protected String configure_()   {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+
+        if (auth != null) {
+            Object principal = auth.getPrincipal();
+            if (principal instanceof UserDetails) {
+                UserDetails user = (UserDetails) principal;
+                username = user.getUsername();
+                // User is logged in, now you can access its details
+            }
+        }
+        return  username;
     }
 }
