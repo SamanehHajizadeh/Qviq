@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,10 @@ public class Controller   {
 
     @Autowired
     private InfoRepository repository;
+
+    @Autowired
+    private ResultRepository resultRepository;
+
 
     @GetMapping("/read-spring-cookie")
     public String readCookie(
@@ -91,20 +96,17 @@ public class Controller   {
         ObjectMapper mapper = new ObjectMapper();
         Result result = mapper.convertValue(hash, Result.class);
 
-//        CacheControl cacheControl =
-//                CacheControl.maxAge(max_age, TimeUnit.SECONDS)
-//         .noTransform()
-//         .cachePrivate();
-
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setCacheControl("max-age=600");
 
         Long maxAge_limit = (Long) hash.get("maxAge_limit");
         System.out.println(maxAge_limit);
+        System.out.println(maxAge_limit);
+        Result save = resultRepository.save(result);
         return ResponseEntity
                 .ok()
                 .cacheControl(CacheControl.maxAge(maxAge_limit, TimeUnit.SECONDS))
-                .body(result);
+                .body(save);
     }
 
     public HttpCookie getCookie(){

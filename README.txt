@@ -61,12 +61,13 @@ http://localhost:8080/allMessagesLessThan_max_age/71914430
 ------------------------------------------------------------------------------------
 7. Change the behaviour of the endpoint on / described in step 1 to instead return some json describing the state of the service.
 The data returned should include at least
-_the current number of stored logs,
-  * /all
+_the current number of stored logs, : * /all
 _the maxAge limit,
-
 _the total number of messages,
 _the average number of messages per log.
 
+--------------------------------------------------------------------------------------
+8. Update your integration tests to cover the functionality described in step 7.
 
+-----------------------------------------------------------------------------------------
 

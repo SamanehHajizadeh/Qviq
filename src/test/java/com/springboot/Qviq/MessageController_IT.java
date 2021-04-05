@@ -9,16 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.concurrent.TimeUnit;
+
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class MessageController_IT
 {
+    private final long max_age =1700000;
 
     @Autowired
     private MockMvc mvc;
@@ -42,7 +43,7 @@ public class MessageController_IT
     private InfoRepository  mock;
 
 
-    @Test
+//    @Test
     public void getHello() throws Exception {
         mvc.perform(MockMvcRequestBuilders
                 .get("/")
@@ -51,6 +52,24 @@ public class MessageController_IT
                 .andExpect(content().string(equalTo("Hello World!")));
     }
 
+//    @Test
+    public void get_() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+//                .andExpect((ResultMatcher) CacheControl.maxAge(max_age, TimeUnit.SECONDS));
+                .andExpect(content().string(equalTo("Hello World!")));;
+    }
+
+//    @Test
+    public void get_Hello() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.header()
+                        .string("Cache-Control","max-age=60, must-revalidate, no-transform"));
+    }
 
     @Test
     public void getAllMessageAPI() throws Exception

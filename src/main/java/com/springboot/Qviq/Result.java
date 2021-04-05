@@ -15,9 +15,8 @@ public class Result {
 
     private
     @Id
-//    @GeneratedValue
-    @JsonIgnore
-    @JsonProperty
+    @GeneratedValue
+//    @JsonProperty
     Long Id;
     private Integer current_number_of_stored_logs;
     private Integer maxAge_limit;
