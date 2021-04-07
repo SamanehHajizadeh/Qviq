@@ -1,5 +1,6 @@
 package com.springboot.Qviq;
 
+import com.springboot.Qviq.controller.LogsController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +15,7 @@ public class CrulTest {
 
     //https://medium.com/@prajwalsdharan/curl-in-java-d62a5e4c0f55
     //Curl is a networking tool used to transfer data between a server and the curl client using protocols like HTTP, FTP, TELNET, and SCP.
-    private final static Logger logger = Logger.getLogger(Controller.class.getName());
+    private final static Logger logger = Logger.getLogger(LogsController.class.getName());
     private final static String crulPathWIN = "C:/Program Files/Git/mingw64/bin";
     private final static String crulPathUBUNTU = "./i";
 
@@ -41,7 +42,7 @@ public class CrulTest {
 
 
     @Test
-    public void posTNewData() throws IOException, InterruptedException {
+    public void postNewData() throws IOException, InterruptedException {
         String command =
                 "curl -X POST http://localhost:8080/addNewMessage\n" +
                      /*   "//--header \"Content-Type: application/json\"\n" +*/

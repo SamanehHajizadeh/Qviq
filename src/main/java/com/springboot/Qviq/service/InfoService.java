@@ -1,7 +1,12 @@
-package com.springboot.Qviq;
+package com.springboot.Qviq.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.Qviq.model.Info;
+import com.springboot.Qviq.exception.InfoNotFoundException;
+import com.springboot.Qviq.repository.InfoRepository;
+import com.springboot.Qviq.exception.InfoUnSupportedFieldPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,8 +30,6 @@ ConcurrentHashMap OR Hashtable: Alternatively to synchronized collections, we ca
 public class InfoService implements IInfoService {
 
     private final static Logger log = Logger.getLogger(InfoService.class.getName());
-    private long max_age = 1700000;
-
 
     @Autowired
     private InfoRepository repository;
@@ -116,7 +118,7 @@ public class InfoService implements IInfoService {
         System.out.println("NOW: " + date2);
 
 
-        long diffResult = dateMessage.getTime() - new Date().getTime();
+        long diffResult = new Date().getTime() - dateMessage.getTime();
         System.out.println(diffResult + "********MaxAgeOfMessage**********");
 
         return diffResult;
@@ -135,38 +137,10 @@ public class InfoService implements IInfoService {
         return messages;
     }
 
+    public void deleteLogsOlder_thanMaxAge(Long max_age) {
 
-    public Hashtable<String, Object> getLogByCache() {
-        int countOfMessages = 0;
-        ObjectMapper mapper = new ObjectMapper();
-        List<Info> allLogs = findAll();
-        if (allLogs.isEmpty())
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "404"
-            );
-        int countOfLogs = allLogs.size();
-        log.info("**********List Size*********" + countOfLogs);
-
-        for (Info infoLog : allLogs) {
-
-            if (infoLog.getMessageContent() != null)
-//        if(!infoLog.getMessageContent().isEmpty())
-                countOfMessages++;
-        }
-        log.info("**********Count of messages*********" + countOfMessages);
-
-        Hashtable<String, Object> hash = new Hashtable<>();
-        hash.put("current_number_of_stored_logs", countOfLogs);
-        hash.put("maxAge_limit", max_age);
-        hash.put("total_number_of_messages", countOfMessages);
-        hash.put("average_number_of_messages_per_log", countOfMessages / countOfMessages);
-
-        return hash;
-    }
-
-
-    public void deleteLogsOlder_thanMaxAge() {
-        List<Info> oldMessages = older_than_max_age_(max_age);
+        System.out.println(max_age);
+        List<Info> oldMessages = older_than_max_age_(Long.valueOf(max_age));
         System.out.println("We have " + oldMessages + "Old Messages!");
         for (Info oldMessage : oldMessages) {
             System.out.println("Old Messages " + oldMessage.getLogId() + "Will be Deleted! " + oldMessage.getDate());
@@ -188,17 +162,6 @@ public class InfoService implements IInfoService {
         return messages;
     }
 
-    public ResponseCookie getCookie() {
-        return
-
-                ResponseCookie
-                        .from("heroku-nav-data", "nav_data")
-                        .httpOnly(true)
-                        .maxAge(max_age)
-                        .path("/")
-                        .build();
-    }
-
     protected String configure_() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = null;
@@ -212,5 +175,32 @@ public class InfoService implements IInfoService {
             }
         }
         return username;
+    }
+
+    public Hashtable<String, Object> getLogByCache(Long max_age) {
+        int countOfMessages = 0;
+
+        List<Info> allLogs = findAll();
+        if (allLogs.isEmpty())
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "404"
+            );
+        int countOfLogs = allLogs.size();
+        log.info("**********List Size*********" + countOfLogs);
+
+        for (Info infoLog : allLogs) {
+
+            if (infoLog.getMessageContent() != null)
+                countOfMessages++;
+        }
+        log.info("**********Count of messages*********" + countOfMessages);
+
+        Hashtable<String, Object> hash = new Hashtable<>();
+        hash.put("current_number_of_stored_logs", countOfLogs);
+        hash.put("maxAge_limit", max_age);
+        hash.put("total_number_of_messages", countOfMessages);
+        hash.put("average_number_of_messages_per_log", countOfMessages / countOfMessages);
+
+        return hash;
     }
 }

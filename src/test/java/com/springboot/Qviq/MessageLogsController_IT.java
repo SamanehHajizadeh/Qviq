@@ -1,6 +1,10 @@
 package com.springboot.Qviq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.Qviq.model.Info;
+import com.springboot.Qviq.repository.InfoRepository;
+import com.springboot.Qviq.service.InfoService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MessageController_IT
+public class MessageLogsController_IT
 {
     private final long max_age =1700000;
 
@@ -40,36 +44,8 @@ public class MessageController_IT
     private MockMvc mvc;
 
     @MockBean
-    private InfoRepository  mock;
+    private InfoRepository mock;
 
-
-//    @Test
-    public void getHello() throws Exception {
-        mvc.perform(MockMvcRequestBuilders
-                .get("/")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(equalTo("Hello World!")));
-    }
-
-//    @Test
-    public void get_() throws Exception {
-        mvc.perform(MockMvcRequestBuilders
-                .get("/")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-//                .andExpect((ResultMatcher) CacheControl.maxAge(max_age, TimeUnit.SECONDS));
-                .andExpect(content().string(equalTo("Hello World!")));;
-    }
-
-//    @Test
-    public void get_Hello() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/"))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.header()
-                        .string("Cache-Control","max-age=60, must-revalidate, no-transform"));
-    }
 
     @Test
     public void getAllMessageAPI() throws Exception
@@ -79,7 +55,7 @@ public class MessageController_IT
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-               // .andExpect(MockMvcResultMatchers.jsonPath("/all").exists())
+//                .andExpect(MockMvcResultMatchers.jsonPath("/all").exists())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -114,17 +90,32 @@ public class MessageController_IT
         Mockito.verify(mock, times(1)).save(any(Info.class));
     }
 
+    //    @Test
+    public void getHello() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(equalTo("Hello World!")));
+    }
+
+    //    @Test
+    public void get_() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect((ResultMatcher) CacheControl.maxAge(max_age, TimeUnit.SECONDS));
+//                .andExpect(content().string(equalTo("Hello World!")));;
+    }
 
 //    @Test
-    public void getMessageById() throws Exception {
-//        Info newMessage = new Info(1L, "Samane", "Message1", null);
-//        when(mock.save(any(Info.class))).thenReturn(newMessage);
-
-        mvc.perform(MockMvcRequestBuilders
-                .get("/getLog/{id}", 1)
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.logId").value(1));
+    public void getDefault() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers
+                        .header()
+                        .string("Cache-Control", "no-cache, no-store, must-revalidate"));
     }
 }

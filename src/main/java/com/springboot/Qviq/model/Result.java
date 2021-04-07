@@ -1,4 +1,4 @@
-package com.springboot.Qviq;
+package com.springboot.Qviq.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

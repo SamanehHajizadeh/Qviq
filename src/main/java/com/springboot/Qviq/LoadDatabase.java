@@ -2,6 +2,8 @@
 package com.springboot.Qviq;
 
 
+import com.springboot.Qviq.model.Info;
+import com.springboot.Qviq.repository.InfoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +22,9 @@ class LoadDatabase {
 
    @Bean
     CommandLineRunner initDatabase(InfoRepository messageRepository) throws ParseException {
-       Info M1 =  new Info("sami", null, null);
-//       Info M1 =  new Info(10L, "A", "messageContent A ", new Timestamp(System.currentTimeMillis()),0);
+       Info M1 =  new Info("sami", null, new Date());
 
-       final   Date date = myFormat.parse("2021-09-03 09:32:30");
+       final   Date date = myFormat.parse("2020-09-03 09:32:30");
        Info M2 =  new Info("B", "messageContent B ", date);
 
 
