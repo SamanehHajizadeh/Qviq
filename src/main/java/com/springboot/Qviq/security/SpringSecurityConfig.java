@@ -1,4 +1,4 @@
-package com.springboot.Qviq;
+package com.springboot.Qviq.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;

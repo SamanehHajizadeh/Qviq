@@ -1,4 +1,4 @@
-package com.springboot.Qviq;
+package com.springboot.Qviq.security;
 
 import com.springboot.Qviq.service.IInfoService;
 import org.springframework.beans.factory.annotation.Autowired;

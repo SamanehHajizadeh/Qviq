@@ -1,12 +1,12 @@
-package com.springboot.Qviq.service;
+package com.springboot.Qviq.service.imp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.Qviq.model.Info;
 import com.springboot.Qviq.exception.InfoNotFoundException;
 import com.springboot.Qviq.repository.InfoRepository;
 import com.springboot.Qviq.exception.InfoUnSupportedFieldPatchException;
+import com.springboot.Qviq.service.IInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class InfoService implements IInfoService {
     public Info addNewMessage(Info message) {
 
 //        String userName = configure_();
-        Hashtable<String, Object> hash = new Hashtable<>();
+        ConcurrentHashMap<String, Object> hash = new ConcurrentHashMap<>();
         ObjectMapper mapper = new ObjectMapper();
         Info message1 = new Info();
         try {

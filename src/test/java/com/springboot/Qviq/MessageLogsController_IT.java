@@ -3,8 +3,6 @@ package com.springboot.Qviq;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.Qviq.model.Info;
 import com.springboot.Qviq.repository.InfoRepository;
-import com.springboot.Qviq.service.InfoService;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
