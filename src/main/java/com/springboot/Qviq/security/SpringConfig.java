@@ -16,13 +16,13 @@ public class SpringConfig {
 
     @Autowired
     private Environment env;
-//
-//
-//    //    @Scheduled(fixedDelay = 1000)
-//    public void scheduleFixedDelayTask() {
-//        System.out.println(
-//                "Fixed delay task - " + System.currentTimeMillis() / 1000);
-//    }
+
+
+    //    @Scheduled(fixedDelay = 1000)
+    public void scheduleFixedDelayTask() {
+        System.out.println(
+                "Fixed delay task - " + System.currentTimeMillis() / 1000);
+    }
 
     @Scheduled(cron = "0 * * * * *")
     public void scheduleTaskUsingCronExpression() {
