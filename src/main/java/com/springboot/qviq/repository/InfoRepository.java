@@ -1,6 +1,6 @@
-package com.springboot.Qviq.repository;
+package com.springboot.qviq.repository;
 
-import com.springboot.Qviq.model.Info;
+import com.springboot.qviq.model.Info;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

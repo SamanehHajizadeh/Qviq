@@ -1,4 +1,4 @@
-package com.springboot.Qviq.exception;
+package com.springboot.qviq.exception;
 
 
 public class InfoNotFoundException extends RuntimeException {

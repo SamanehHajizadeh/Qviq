@@ -1,4 +1,4 @@
-package com.springboot.Qviq.exception;
+package com.springboot.qviq.exception;
 
 import java.util.Set;
 

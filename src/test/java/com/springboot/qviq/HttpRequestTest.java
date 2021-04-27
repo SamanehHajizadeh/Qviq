@@ -1,4 +1,4 @@
-package com.springboot.Qviq;
+package com.springboot.qviq;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

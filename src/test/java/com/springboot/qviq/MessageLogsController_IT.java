@@ -1,8 +1,8 @@
-package com.springboot.Qviq;
+package com.springboot.qviq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.Qviq.model.Info;
-import com.springboot.Qviq.repository.InfoRepository;
+import com.springboot.qviq.model.Info;
+import com.springboot.qviq.repository.InfoRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.*;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -28,41 +31,42 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MessageLogsController_IT
-{
-    private final long max_age =1700000;
+@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "classpath*:sql/cleanup.sql")
+public class MessageLogsController_IT {
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private final long max_age = 1700000;
 
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
-    private InfoRepository mockRepository;
-
+    @Autowired
+    private InfoRepository infoRepository;
 
     @Test
-    public void getAllMessageAPI() throws Exception
-    {
-        mvc.perform( MockMvcRequestBuilders
+    @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "classpath*:sql/logs.sql")
+    @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath*:sql/cleanup.sql")
+    public void getAllMessageAPI() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
                 .get("/all")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
 //                .andExpect(MockMvcResultMatchers.jsonPath("/all").exists())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andReturn()
+                .
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -79,19 +83,20 @@ public class MessageLogsController_IT
                 "\n" +
                 "    ";
         Info newMessage = new Info(1L, "Samane", "Message1", null);
-        when(mockRepository.save(any(Info.class))).thenReturn(newMessage);
 
-        mvc.perform( MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                 .post("/NewMessage")
                 .content(om.writeValueAsString(newMessage))
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 //                .andExpect((ResultMatcher) jsonPath("$.name", "Sisil"));
-               // .andExpect(jsonPath("$.messageId", is(1)))
+        // .andExpect(jsonPath("$.messageId", is(1)))
 //                .andExpect(jsonPath("$.name", "Sisil")))
 //                .andExpect(jsonPath("$.messageContent", is("ggg!")));
 
+        final List<Info> infos = infoRepository.findAll();
+        //assertions
         Mockito.verify(mockRepository, times(1)).save(any(Info.class));
     }
 
@@ -102,7 +107,6 @@ public class MessageLogsController_IT
                 new Info(10L, "A", "messageContent A ", new Date()),
                 new Info(20L, "B", "messageContent B ", new Date()));
 
-        when(mockRepository.findAll()).thenReturn(messages);
 
         mvc.perform(get("/all"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -206,7 +210,7 @@ public class MessageLogsController_IT
 //                .andExpect(content().string(equalTo("Hello World!")));;
     }
 
-//    @Test
+    //    @Test
     public void getDefault() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/"))
                 .andDo(MockMvcResultHandlers.print())

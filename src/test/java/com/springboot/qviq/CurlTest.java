@@ -1,6 +1,6 @@
-package com.springboot.Qviq;
+package com.springboot.qviq;
 
-import com.springboot.Qviq.controller.LogsController;
+import com.springboot.qviq.controller.LogsController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CrulTest {
+public class CurlTest {
 
     //https://medium.com/@prajwalsdharan/curl-in-java-d62a5e4c0f55
     //Curl is a networking tool used to transfer data between a server and the curl client using protocols like HTTP, FTP, TELNET, and SCP.

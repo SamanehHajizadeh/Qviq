@@ -1,18 +1,20 @@
-package com.springboot.Qviq.security;
+package com.springboot.qviq.security;
 
-import com.springboot.Qviq.service.IInfoService;
+import com.springboot.qviq.service.InfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+@Slf4j
 @Configuration
 @EnableScheduling
 public class SpringConfig {
 
     @Autowired
-    IInfoService service;
+    private InfoService service;
 
     @Autowired
     private Environment env;
@@ -26,14 +28,16 @@ public class SpringConfig {
 
     @Scheduled(cron = "0 * * * * *")
     public void scheduleTaskUsingCronExpression() {
-        long now = System.currentTimeMillis() / 1000;
+        long start = System.currentTimeMillis() / 1000;
         System.out.println(
-                "schedule tasks using cron jobs - " + now);
+                "schedule tasks using cron jobs - " + start);
 
         String max_age = env.getProperty("max_age");
         System.out.println("********max_age*******" + max_age);
         service.deleteLogsOlder_thanMaxAge(Long.valueOf(max_age));
-        System.out.println("DONE!!!!!!!!!!!!!!!!");
+
+        long end = System.currentTimeMillis();
+        log.info("Cronjob completed in {}ms.", end - start);
     }
 
 }

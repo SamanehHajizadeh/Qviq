@@ -1,19 +1,16 @@
-package com.springboot.Qviq.service;
+package com.springboot.qviq.service;
 
 
-import com.springboot.Qviq.model.Info;
-import org.springframework.http.ResponseCookie;
+import com.springboot.qviq.dto.SystemStatusDTO;
+import com.springboot.qviq.model.Info;
 
-import java.util.Hashtable;
 import java.util.List;
 
-public interface IInfoService {
+public interface InfoService {
 
     Info getLog(int logId);
 
     Info updateLogByAddingMessage(String name, int logId, String message);
-
-    List<Info> findAll();
 
     Info addNewMessage(Info message);
 
@@ -25,6 +22,6 @@ public interface IInfoService {
 
     void deleteLogsOlder_thanMaxAge(Long maxAge);
 
-    Hashtable<String, Object> getLogByCache(Long max_age);
+    SystemStatusDTO getSystemStatus();
 
 }

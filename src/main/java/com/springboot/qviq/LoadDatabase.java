@@ -1,9 +1,9 @@
 
-package com.springboot.Qviq;
+package com.springboot.qviq;
 
 
-import com.springboot.Qviq.model.Info;
-import com.springboot.Qviq.repository.InfoRepository;
+import com.springboot.qviq.model.Info;
+import com.springboot.qviq.repository.InfoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

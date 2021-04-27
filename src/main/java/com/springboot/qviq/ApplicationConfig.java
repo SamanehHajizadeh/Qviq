@@ -1,7 +1,5 @@
-package com.springboot.Qviq;
+package com.springboot.qviq;
 
-import com.springboot.Qviq.repository.InfoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,9 +9,5 @@ public class ApplicationConfig {
 
     public static void main(String... args) {
         SpringApplication.run(ApplicationConfig.class, args);
-    }
-
-    public void run(String... args) throws Exception {
-        //Code to run at application startup
     }
 }

@@ -1,12 +1,14 @@
-package com.springboot.Qviq.service.imp;
+package com.springboot.qviq.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.Qviq.model.Info;
-import com.springboot.Qviq.exception.InfoNotFoundException;
-import com.springboot.Qviq.repository.InfoRepository;
-import com.springboot.Qviq.exception.InfoUnSupportedFieldPatchException;
-import com.springboot.Qviq.service.IInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.springboot.qviq.dto.SystemStatusDTO;
+import com.springboot.qviq.model.Info;
+import com.springboot.qviq.exception.InfoNotFoundException;
+import com.springboot.qviq.model.MessageConfig;
+import com.springboot.qviq.repository.InfoRepository;
+import com.springboot.qviq.exception.InfoUnSupportedFieldPatchException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,20 +22,20 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
 /*
 ConcurrentHashMap OR Hashtable: Alternatively to synchronized collections, we can use concurrent collections to create thread-safe collections.
    */
+@Slf4j
 @Service
-public class InfoService implements IInfoService {
+@RequiredArgsConstructor
+public class InfoServiceImpl implements InfoService {
 
-    private final static Logger log = Logger.getLogger(InfoService.class.getName());
+    private final MessageConfigService messageConfigService;
 
-    @Autowired
-    private InfoRepository repository;
+    private final InfoRepository infoRepository;
 
     @Override
     public Info addNewMessage(Info message) {
@@ -61,17 +63,12 @@ public class InfoService implements IInfoService {
     }
 
     @Override
-    public List<Info> findAll() {
-        return repository.findAll();
-    }
-
-    @Override
     public Info getLog(int logId) {
-        if (repository.findById(Long.valueOf(logId)).isPresent() == false)
+        if (infoRepository.findById(Long.valueOf(logId)).isPresent() == false)
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "404"
             );
-        return repository.findById(Long.valueOf(logId))
+        return infoRepository.findById(Long.valueOf(logId))
                 .orElseThrow(() -> new InfoNotFoundException(Long.valueOf(logId)));
     }
 
@@ -79,7 +76,7 @@ public class InfoService implements IInfoService {
     public Info updateLogByAddingMessage(String name, int logId, String message) {
         Hashtable<String, String> updateMap = new Hashtable<>();
         ObjectMapper mapper = new ObjectMapper();
-        return repository.findById(Long.valueOf(logId))
+        return infoRepository.findById(Long.valueOf(logId))
                 .map(x -> {
 //                    String messageContent = updateMap.get("messageContent");
                     if (!StringUtils.isEmpty(message)) {
@@ -106,7 +103,7 @@ public class InfoService implements IInfoService {
 
 
     public long findMaxAgeOfMessage(long id) {
-        Info message = repository.findById(id)
+        Info message = infoRepository.findById(id)
                 .orElseThrow(() -> new InfoNotFoundException(id));
 
         Date dateMessage = message.getDate();
@@ -130,7 +127,7 @@ public class InfoService implements IInfoService {
     public List<Info> showMessagesLessAnMaxAge(Integer max_age) {
         System.out.println("max_age: " + max_age);
 
-        List<Info> messages = repository.findAll()
+        List<Info> messages = infoRepository.findAll()
                 .stream()
                 .filter(x ->
                         Long.compare(findMaxAgeOfMessage(x.getLogId()), max_age) == -1)
@@ -145,7 +142,7 @@ public class InfoService implements IInfoService {
         System.out.println("We have " + oldMessages + "Old Messages!");
         for (Info oldMessage : oldMessages) {
             System.out.println("Old Messages " + oldMessage.getLogId() + "Will be Deleted! " + oldMessage.getDate());
-            repository.delete(oldMessage);
+            infoRepository.delete(oldMessage);
         }
     }
 
@@ -153,7 +150,7 @@ public class InfoService implements IInfoService {
         System.out.println("max_age: " + max_age);
 
         List<Info> messages =
-                repository
+                infoRepository
                         .findAll()
                         .stream()
                         .filter(x -> x.getDate() != null)
@@ -178,30 +175,20 @@ public class InfoService implements IInfoService {
         return username;
     }
 
-    public Hashtable<String, Object> getLogByCache(Long max_age) {
-        int countOfMessages = 0;
+    public SystemStatusDTO getSystemStatus() {
+        long countOfLogs = infoRepository.count();
 
-        List<Info> allLogs = findAll();
-        if (allLogs.isEmpty())
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "404"
-            );
-        int countOfLogs = allLogs.size();
-        log.info("**********List Size*********" + countOfLogs);
+        log.info("Count of logs is: {}", countOfLogs);
 
-        for (Info infoLog : allLogs) {
+        final Integer maxAge = messageConfigService.getMessageConfig()
+                .map(MessageConfig::getMaxAge)
+                .orElse(0);
 
-            if (infoLog.getMessageContent() != null)
-                countOfMessages++;
-        }
-        log.info("**********Count of messages*********" + countOfMessages);
-
-        Hashtable<String, Object> hash = new Hashtable<>();
-        hash.put("current_number_of_stored_logs", countOfLogs);
-        hash.put("maxAge_limit", max_age);
-        hash.put("total_number_of_messages", countOfMessages);
-        hash.put("average_number_of_messages_per_log", countOfMessages / countOfMessages);
-
-        return hash;
+        return SystemStatusDTO.builder()
+                .currentNumberOfStoredLogs(countOfLogs)
+                .maxAgeLimit(maxAge)
+                .totalNumberOfMessages(countOfLogs)
+                .averageNumberOfMessagesPerLog(1)
+                .build();
     }
 }

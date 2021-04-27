@@ -1,4 +1,4 @@
-package com.springboot.Qviq.model;
+package com.springboot.qviq.model;
 
 import lombok.Data;
 
