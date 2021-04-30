@@ -10,17 +10,17 @@ public interface InfoService {
 
     Info getLog(int logId);
 
+    List<Info> findAll();
+
     Info updateLogByAddingMessage(String name, int logId, String message);
 
     Info addNewMessage(Info message);
 
     long findMaxAgeOfMessage(long id);
 
-    List<Info> showMessagesLessAnMaxAge(Integer max_age);
+    List<Info> getMessagesLessThanMaxAge();
 
-    List<Info> older_than_max_age_(Long max_age);
-
-    void deleteLogsOlder_thanMaxAge(Long maxAge);
+    void deleteMessagesOlderThanMaxAge();
 
     SystemStatusDTO getSystemStatus();
 

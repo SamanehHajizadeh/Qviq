@@ -13,6 +13,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.MappedSuperclass;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,10 +39,8 @@ public class LogsController {
     @GetMapping(value = "/")
     public ResponseEntity<String> getHello(HttpServletRequest request, HttpServletResponse response) {
         response.addCookie(new Cookie("name", "samane"));
-
         return ResponseEntity
                 .ok()
-                .header(HttpHeaders.SET_COOKIE, cookie().toString())
                 .body("Hello World!");
     }
 
@@ -59,20 +58,15 @@ public class LogsController {
         return ResponseEntity.ok().body(save);
     }
 
-    /*@RequestMapping(value = "/all", method = RequestMethod.GET)
-    public ResponseEntity<Object> getAllLogs() {
-        return new ResponseEntity<>(messageService.findAll(), HttpStatus.OK);
-    }*/
-
     @RequestMapping(value = "/NewMessage", method = RequestMethod.POST)
     public ResponseEntity<Object> addNewMessage(@RequestBody Info message) {
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie().toString())
+//                .header(HttpHeaders.SET_COOKIE, cookie().toString())
                 .body(repository.save(messageService.addNewMessage(message)));
     }
 
-    @GetMapping(value = "/max_age_message/{id}")
-    public ResponseEntity<String> max_age_(@PathVariable("id") Long id) {
+    @GetMapping(value = "/messageMaxAge/{id}")
+    public ResponseEntity<String> getMessagesMaxAge(@PathVariable("id") Long id) {
 
         long ageOfMessage = messageService.findMaxAgeOfMessage(id);
 
@@ -81,13 +75,16 @@ public class LogsController {
         return new ResponseEntity<>(daysBetween, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/set_max_age/{max_age}")
+    @GetMapping(value = "/MessagesLessThanMaxAge")
     public ResponseEntity<Object> allMessagesLessThanMaxAge() {
-        String max_age = env.getProperty("max_age");
-        System.out.println(max_age);
         return ResponseEntity
                 .ok()
-                .body(messageService.showMessagesLessAnMaxAge(Integer.valueOf(max_age)));
+                .body(messageService.getMessagesLessThanMaxAge());
+    }
+
+    @DeleteMapping("/deleteOldMessages")
+    void deleteMessagesOlderThanMaxAge() {
+        messageService.deleteMessagesOlderThanMaxAge();
     }
 
     @DeleteMapping("/Message/{id}")
@@ -96,20 +93,9 @@ public class LogsController {
     }
 
 
-    @GetMapping("/read-spring-cookie")
     public String readCookie(
             @CookieValue(name = "user-id", defaultValue = "default-user-id") String userId) {
         return userId;
-    }
-
-    public ResponseCookie cookie() {
-        String max_age = env.getProperty("max_age");
-        return ResponseCookie
-                .from("heroku-nav-data", "nav_data")
-                .httpOnly(true)
-                .maxAge(Long.valueOf(max_age))
-                .path("/")
-                .build();
     }
 
     @GetMapping(value = "/system-status")

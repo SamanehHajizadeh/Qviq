@@ -27,4 +27,11 @@ public class MessageConfigService {
                 .findFirst();
     }
 
+//    public void updateMaxAge(final int maxAge) {
+//        MessageConfig.builder()
+//                .maxAge(maxAge)
+//                .build();
+//    }
+
+
 }

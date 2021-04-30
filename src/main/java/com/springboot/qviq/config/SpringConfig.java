@@ -1,4 +1,4 @@
-package com.springboot.qviq.security;
+package com.springboot.qviq.config;
 
 import com.springboot.qviq.service.InfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +26,15 @@ public class SpringConfig {
                 "Fixed delay task - " + System.currentTimeMillis() / 1000);
     }
 
-    @Scheduled(cron = "0 * * * * *")
+//    @Scheduled(cron = "0 * * * * *")
     public void scheduleTaskUsingCronExpression() {
         long start = System.currentTimeMillis() / 1000;
         System.out.println(
                 "schedule tasks using cron jobs - " + start);
 
-        String max_age = env.getProperty("max_age");
-        System.out.println("********max_age*******" + max_age);
-        service.deleteLogsOlder_thanMaxAge(Long.valueOf(max_age));
+//        String max_age = env.getProperty("max_age");
+//        System.out.println("********max_age*******" + max_age);
+        service.deleteMessagesOlderThanMaxAge();
 
         long end = System.currentTimeMillis();
         log.info("Cronjob completed in {}ms.", end - start);

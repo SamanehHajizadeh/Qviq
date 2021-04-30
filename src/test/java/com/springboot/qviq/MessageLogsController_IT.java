@@ -65,9 +65,9 @@ public class MessageLogsController_IT {
                 .andExpect(status().isOk())
 //                .andExpect(MockMvcResultMatchers.jsonPath("/all").exists())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andReturn()
-                .
-                .andDo(MockMvcResultHandlers.print());
+                .andReturn();
+//        todo
+//                .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
@@ -82,7 +82,12 @@ public class MessageLogsController_IT {
                 "    }\n" +
                 "\n" +
                 "    ";
-        Info newMessage = new Info(1L, "Samane", "Message1", null);
+        Info newMessage = Info.builder()
+                .logId(1L)
+                .name("Samane")
+                .messageContent("Message1")
+                .date(null)
+                .build();
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/NewMessage")
@@ -97,16 +102,24 @@ public class MessageLogsController_IT {
 
         final List<Info> infos = infoRepository.findAll();
         //assertions
-        Mockito.verify(mockRepository, times(1)).save(any(Info.class));
+        Mockito.verify(infoRepository, times(1)).save(any(Info.class));
     }
 
     @Test
     public void find_all_OK() throws Exception {
-
         List<Info> messages = Arrays.asList(
-                new Info(10L, "A", "messageContent A ", new Date()),
-                new Info(20L, "B", "messageContent B ", new Date()));
-
+                Info.builder()
+                        .logId(10L)
+                        .name("A")
+                        .messageContent("messageContent A ")
+                        .date(new Date())
+                        .build(),
+                Info.builder()
+                        .logId(20L)
+                        .name("B")
+                        .messageContent("messageContent B ")
+                        .date(new Date())
+                        .build());
 
         mvc.perform(get("/all"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -119,7 +132,7 @@ public class MessageLogsController_IT {
                 .andExpect(jsonPath("$[1].name", is("B")))
                 .andExpect(jsonPath("$[1].messageContent", is("messageContent B ")));
 
-        verify(mockRepository, times(1)).findAll();
+        verify(infoRepository, times(1)).findAll();
     }
 
     @Test
@@ -129,8 +142,13 @@ public class MessageLogsController_IT {
 
     @Test
     public void save_OK() throws Exception {
-        Info newM = new Info(1L, "Spring Boot Guide", "Spring Boot Guide For test", null);
-        when(mockRepository.save(any(Info.class))).thenReturn(newM);
+        Info newM = Info.builder()
+                .logId(10L)
+                .name("A")
+                .messageContent("messageContent A ")
+                .date(new Date())
+                .build();
+        when(infoRepository.save(any(Info.class))).thenReturn(newM);
 
         mvc.perform(post("/NewMessage")
                 .content(mapper.writeValueAsString(newM))
@@ -141,7 +159,7 @@ public class MessageLogsController_IT {
                 .andExpect(jsonPath("$.name", is("Spring Boot Guide")))
                 .andExpect(jsonPath("$.messageContent", is("Spring Boot Guide For test")));
 
-        verify(mockRepository, times(1)).save(any(Info.class));
+        verify(infoRepository, times(1)).save(any(Info.class));
 
     }
 
@@ -149,36 +167,20 @@ public class MessageLogsController_IT {
     @Test
     public void delete_OK() throws Exception {
 
-        doNothing().when(mockRepository).deleteById(1L);
+        doNothing().when(infoRepository).deleteById(1L);
 
         mvc.perform(delete("/Message/1"))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(mockRepository, times(1)).deleteById(1L);
-    }
-
-    //    @Test
-    public void patch_messageContent_OK() throws Exception {
-
-        when(mockRepository.save(any(Info.class))).thenReturn(new Info());
-        String patchInJson = "{\"messageContent\":\"update message Content\"}";
-
-        mvc.perform(patch("/update/1")
-                .content(patchInJson)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        verify(mockRepository, times(1)).findById(1L);
-        verify(mockRepository, times(1)).save(any(Info.class));
-
+        verify(infoRepository, times(1)).deleteById(1L);
     }
 
     // @Test
     public void patch_M_405() throws Exception {
 
         //If U add save it will return 200
-        // when(mockRepository.save(any(Message.class))).thenReturn(new Message());
+        // when(infoRepository.save(any(Message.class))).thenReturn(new Message());
         String patchInJson = "{\"messageContent\":\"kkkkk\"}";
 
         mvc.perform(patch("/update/1")
@@ -186,8 +188,8 @@ public class MessageLogsController_IT {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andExpect(status().isMethodNotAllowed());
 
-        verify(mockRepository, times(1)).findById(1L);
-        verify(mockRepository, times(0)).save(any(Info.class));
+        verify(infoRepository, times(1)).findById(1L);
+        verify(infoRepository, times(0)).save(any(Info.class));
     }
 
 
